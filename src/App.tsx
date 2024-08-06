@@ -62,6 +62,8 @@ function App() {
     'url': 'URL'
   };
 
+  const searchableColumns = ['selector', 'url']
+
 
   // TODO: control table cell width (to not fluctuate too much depending on data...
   //    probably I should have a fixed width for table and dynamic for columns(?))
@@ -74,7 +76,7 @@ function App() {
   return (
     <>
       <h1>Accessibility Issues List</h1>
-      <Table data={issues} columnNamesMap={columnNamesMap} />
+      <Table data={issues} columnNamesMap={columnNamesMap} searchableColumns={searchableColumns} />
     </>
   )
 }

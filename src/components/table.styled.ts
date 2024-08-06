@@ -15,18 +15,25 @@ export const HeaderCellStyled = styled.th`
     text-align: left;
     
     place-items: center;
-    // TODO: update background for sorting column 
+    // TODO: update background for sorting column
 `
-export const HeaderCellItemsContainerStyled = styled.div`
+export const HeaderCellSortableContainerStyled = styled.div`
     display: flex;
     flex-direction: row;
-    gap: 4px;
-    cursor: pointer;
 
     &:hover {
         opacity: 0.8;
     }
 `
+export const HeaderCellContainerStyled = styled.div`
+    display: flex;
+    flex-direction: row;
+    gap: 4px;
+    cursor: pointer;
+    place-items: center;
+
+    
+`;
 export const BodyCellStyled = styled.td`
     ${tableGenericCellStyle};
 

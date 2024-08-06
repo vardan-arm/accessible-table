@@ -1,25 +1,34 @@
 import {useState} from 'react';
 import {extractTableData} from "../utils/extract-table-data.ts";
 
-import {BodyCellStyled, HeaderCellItemsContainerStyled, HeaderCellStyled} from "./table.styled.ts";
+import {
+  BodyCellStyled,
+  HeaderCellContainerStyled,
+  HeaderCellSortableContainerStyled,
+  HeaderCellStyled
+} from "./table.styled.ts";
 import SortIcon from "./SortIcon.tsx";
+import SearchInput from "./SearchInput.tsx";
 
 
 export interface ITableItem {
-  [key: string]: unknown;
+  [key: string]: string | number;
 }
 
 interface IProps {
   data: ITableItem[];
   columnNamesMap: {
     [key: string]: string;
-  }
+  };
+  searchableColumns?: string[];
 }
 
-const Table = ({data, columnNamesMap}: IProps) => {
+// NOTE: This component should be renamed to be Capitalized... I didn't do that to not spend extra time playing with git...
+//  (it has issues on renaming file name case)
+const Table = ({data, columnNamesMap, searchableColumns = []}: IProps) => {
   const headers = extractTableData(data);
 
-  const [sortedData, setSortedData] = useState(data);
+  const [sortedAndFilteredData, setSortedAndFilteredData] = useState(data);
   const [sortingColumnIndex, setSortingColumnIndex] = useState(0);
   const [isSortingDirectionAsc, setIsSortingDirectionAsc] = useState(true);
 
@@ -31,20 +40,21 @@ const Table = ({data, columnNamesMap}: IProps) => {
 
     const sortByColumnName = headers[columnIndex];
 
-    const sorted = data.sort((a, b) => {
+    // TODO: move to a util file?
+    const sorted = [...data].sort((a, b) => {
       const leftValue = a[sortByColumnName] as number | string;
       const rightValue = b[sortByColumnName] as number | string;
 
       if (leftValue < rightValue) {
-        return newIsSortingDirectionAsc ? -1: 1;
+        return newIsSortingDirectionAsc ? -1 : 1;
       }
       if (rightValue < leftValue) {
-        return newIsSortingDirectionAsc ? 1: -1;
+        return newIsSortingDirectionAsc ? 1 : -1;
       }
       return 0;
     });
 
-    setSortedData(sorted);
+    setSortedAndFilteredData(sorted);
   }
 
   // https://github.com/hibiken/react-places-autocomplete/issues/377
@@ -56,29 +66,44 @@ const Table = ({data, columnNamesMap}: IProps) => {
     }
   }
 
+  const handleFilter = (value: string, index: number) => {
+    // NOTE: I could use transition here, but not now :)
+    const filterByColumnName = headers[index];
+    const filteredValues = data.filter(item => {
+      const currentValue = `${item[filterByColumnName]}`;
+      return currentValue.includes(value);
+    });
+    setSortedAndFilteredData(filteredValues);
+  }
+
   return (
     <div>
       <table>
         <thead>
         <tr>
           {headers.map((headerItem, index) => {
+            const isColumnSearchable = searchableColumns.includes(headerItem);
+
             return (
               <HeaderCellStyled key={index} scope="col">
-                <HeaderCellItemsContainerStyled
-                  onClick={() => handleSortClick(index)}
-                  onKeyDown={(event) => handleSortKeyDown(event, index)}
-                  tabIndex={0}
-                >
-                  {columnNamesMap[headerItem]}
-                  <SortIcon
-                    index={index}
-                    isAlreadySorted={sortingColumnIndex === index}
-                    isSortingDirectionAsc={isSortingDirectionAsc}
-                    // tabIndex={0}
+                <HeaderCellContainerStyled>
+                  <HeaderCellSortableContainerStyled
                     onClick={() => handleSortClick(index)}
-                    // onKeyDown={(event) => handleSortKeyDown(event, index)}
-                  />
-                </HeaderCellItemsContainerStyled>
+                    onKeyDown={(event) => handleSortKeyDown(event, index)}
+                    tabIndex={0}
+                  >
+                    {columnNamesMap[headerItem]}
+                    <SortIcon
+                      index={index}
+                      isAlreadySorted={sortingColumnIndex === index}
+                      isSortingDirectionAsc={isSortingDirectionAsc}
+                      onClick={() => handleSortClick(index)}
+                    />
+                  </HeaderCellSortableContainerStyled>
+                  {isColumnSearchable && (
+                    <SearchInput onChange={(value) => handleFilter(value, index)} />
+                  )}
+                </HeaderCellContainerStyled>
               </HeaderCellStyled>
             )
           })}
@@ -86,8 +111,7 @@ const Table = ({data, columnNamesMap}: IProps) => {
         </thead>
 
         <tbody>
-        {/*{data.map((singleItem, index) => (*/}
-        {sortedData.map((singleItem, index) => (
+        {sortedAndFilteredData.map((singleItem, index) => (
             <tr key={index}>
               {
                 headers.map((headerItem, columnIndex) => {
@@ -95,7 +119,7 @@ const Table = ({data, columnNamesMap}: IProps) => {
                     key={columnIndex}
                     tabIndex={0}
                   >
-                    {(singleItem as any)[headerItem]}
+                    {singleItem[headerItem]}
                   </BodyCellStyled>
                 })
               }
