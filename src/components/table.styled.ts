@@ -6,16 +6,18 @@ export const tableGenericCellStyle = css`
     font-family: 'Lato', sans-serif;
 `
 
-export const HeaderCellStyled = styled.th`
+export const TableStyled = styled.table`
+    border-collapse: collapse;
+`;
+export const HeaderCellStyled = styled.th<{isSorted: boolean}>`
     ${tableGenericCellStyle};
 
-    background-color: #607085;
+    color: white;
+    background-color: ${props => props.isSorted ? '#435060' : '#607085'};
     text-transform: uppercase;
     padding: 12px 24px;
     text-align: left;
-    
     place-items: center;
-    // TODO: update background for sorting column
 `
 export const HeaderCellSortableContainerStyled = styled.div`
     display: flex;
@@ -45,3 +47,7 @@ export const SortIconStyled = styled.img`
     width: 16px;
     height: 16px;
 `;
+
+export const TableRowStyled = styled.tr`
+    border-bottom: 1px solid #607085;
+`

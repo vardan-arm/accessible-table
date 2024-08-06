@@ -5,7 +5,9 @@ import {
   BodyCellStyled,
   HeaderCellContainerStyled,
   HeaderCellSortableContainerStyled,
-  HeaderCellStyled
+  HeaderCellStyled,
+  TableRowStyled,
+  TableStyled
 } from "./table.styled.ts";
 import SortIcon from "./SortIcon.tsx";
 import SearchInput from "./SearchInput.tsx";
@@ -78,14 +80,15 @@ const Table = ({data, columnNamesMap, searchableColumns = []}: IProps) => {
 
   return (
     <div>
-      <table>
+      <TableStyled>
         <thead>
         <tr>
           {headers.map((headerItem, index) => {
+            const isColumnSorted = sortingColumnIndex === index;
             const isColumnSearchable = searchableColumns.includes(headerItem);
 
             return (
-              <HeaderCellStyled key={index} scope="col">
+              <HeaderCellStyled key={index} scope="col" isSorted={isColumnSorted}>
                 <HeaderCellContainerStyled>
                   <HeaderCellSortableContainerStyled
                     onClick={() => handleSortClick(index)}
@@ -95,7 +98,7 @@ const Table = ({data, columnNamesMap, searchableColumns = []}: IProps) => {
                     {columnNamesMap[headerItem]}
                     <SortIcon
                       index={index}
-                      isAlreadySorted={sortingColumnIndex === index}
+                      isAlreadySorted={isColumnSorted}
                       isSortingDirectionAsc={isSortingDirectionAsc}
                       onClick={() => handleSortClick(index)}
                     />
@@ -112,7 +115,7 @@ const Table = ({data, columnNamesMap, searchableColumns = []}: IProps) => {
 
         <tbody>
         {sortedAndFilteredData.map((singleItem, index) => (
-            <tr key={index}>
+            <TableRowStyled key={index}>
               {
                 headers.map((headerItem, columnIndex) => {
                   return <BodyCellStyled
@@ -123,11 +126,11 @@ const Table = ({data, columnNamesMap, searchableColumns = []}: IProps) => {
                   </BodyCellStyled>
                 })
               }
-            </tr>
+            </TableRowStyled>
           )
         )}
         </tbody>
-      </table>
+      </TableStyled>
     </div>
   )
 }

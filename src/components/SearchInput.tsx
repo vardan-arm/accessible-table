@@ -1,4 +1,5 @@
 import {useState} from "react";
+import {SearchInputContainerStyled, SearchInputStyled} from "./SearchInput.styled.tsx";
 
 interface IProps {
   onChange: (value: string) => void;
@@ -18,9 +19,9 @@ const SearchInput = ({onChange}: IProps) => {
   };
 
   return (
-    <div>
-      <input value={value} onChange={handleChange} />
-    </div>
+    <SearchInputContainerStyled>
+      <SearchInputStyled value={value} onChange={handleChange} />
+    </SearchInputContainerStyled>
   )
 }
 
