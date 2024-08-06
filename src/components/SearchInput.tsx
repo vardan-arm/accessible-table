@@ -12,7 +12,6 @@ const SearchInput = ({onChange}: IProps) => {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const handleChange = (event: any) => {
     const newValue = event.target.value;
-    console.log('newValue: ', newValue);
     setValue(newValue);
 
     onChange(newValue);
