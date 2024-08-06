@@ -1,4 +1,4 @@
-import {useState} from 'react';
+import {useEffect, useState} from 'react';
 import {extractTableData} from "../utils/extract-table-data.ts";
 
 import {
@@ -34,6 +34,18 @@ const Table = ({data, columnNamesMap, searchableColumns = []}: IProps) => {
   const [sortingColumnIndex, setSortingColumnIndex] = useState(0);
   const [isSortingDirectionAsc, setIsSortingDirectionAsc] = useState(true);
 
+  const [filters, setFilters] = useState<{ [key: string]: string }>({});
+
+  useEffect(() => {
+    const newFilteredData = data.filter(item => {
+      return Object.entries(filters).every(([key, value]) => {
+        if (!value) return true; // Skip empty filters
+        return item[key].toString().toLowerCase().includes(value.toLowerCase());
+      });
+    });
+    setSortedAndFilteredData(newFilteredData);
+  }, [data, filters]);
+
   const handleSortClick = (columnIndex: number) => {
     const newIsSortingDirectionAsc = sortingColumnIndex === columnIndex ? !isSortingDirectionAsc : true;
 
@@ -42,7 +54,6 @@ const Table = ({data, columnNamesMap, searchableColumns = []}: IProps) => {
 
     const sortByColumnName = headers[columnIndex];
 
-    // TODO: move to a util file?
     const sorted = [...data].sort((a, b) => {
       const leftValue = a[sortByColumnName] as number | string;
       const rightValue = b[sortByColumnName] as number | string;
@@ -69,13 +80,12 @@ const Table = ({data, columnNamesMap, searchableColumns = []}: IProps) => {
   }
 
   const handleFilter = (value: string, index: number) => {
-    // NOTE: I could use transition here, but not now :)
     const filterByColumnName = headers[index];
-    const filteredValues = data.filter(item => {
-      const currentValue = `${item[filterByColumnName]}`;
-      return currentValue.includes(value);
-    });
-    setSortedAndFilteredData(filteredValues);
+
+    setFilters(prevFilters => ({
+      ...prevFilters,
+      [filterByColumnName]: value
+    }));
   }
 
   return (
