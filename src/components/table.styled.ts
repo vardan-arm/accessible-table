@@ -33,8 +33,6 @@ export const HeaderCellContainerStyled = styled.div`
     gap: 4px;
     cursor: pointer;
     place-items: center;
-
-    
 `;
 export const BodyCellStyled = styled.td`
     ${tableGenericCellStyle};
