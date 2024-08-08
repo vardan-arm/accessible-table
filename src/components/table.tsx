@@ -54,7 +54,7 @@ const Table = ({data, columnNamesMap, searchableColumns = []}: IProps) => {
 
     const sortByColumnName = headers[columnIndex];
 
-    const sorted = [...data].sort((a, b) => {
+    const sorted = [...sortedAndFilteredData].sort((a, b) => {
       const leftValue = a[sortByColumnName] as number | string;
       const rightValue = b[sortByColumnName] as number | string;
 
